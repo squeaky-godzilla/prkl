@@ -1,4 +1,4 @@
-# Python Flask API
+# PRKL - Python Flask API & MongoDB showcase
 
 ## Requirements:
 - Use python with Flask.

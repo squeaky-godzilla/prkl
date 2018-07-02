@@ -7,11 +7,6 @@
   - name: import public key
     shell: "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
-  # - name: add MongoDB repo
-  #   repo: deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse
-  #   state: present
-  #   filename: mongodb3.6
-
 
   - name: install MongoDB
     apt:

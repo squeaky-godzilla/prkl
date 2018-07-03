@@ -1,12 +1,20 @@
 import json, sys
+from pymongo import MongoClient as mongo
 
-json_file = sys.argv[1]
+be_hostname = "localhost"
+be_port = 27017
 
-def testQuery(json_file):
-    json_obj = open(json_file,"r")
-    json_list = []
-    for line in json_obj:
-        json_list.append(json.loads(line))
-    return json_list
+def connectMongoDB(ip,port):
+    client = mongo(ip,port)
+    dbase = client.prkl
+    return dbase
 
-print testQuery(json_file)
+def getAll(collection):
+    cursor = collection.find({})
+    result = {}
+    for document in cursor:
+        result[document.get('_id')]=document
+    return result
+
+songs_db = connectMongoDB(be_address,be_port)
+print getAll(songs_db.songs)

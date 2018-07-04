@@ -8,7 +8,7 @@
 nginx proxy loadbalancer --- frontend API server (hosts FLASK) --- backend MongoDB cluster
 
 - Built on Vagrant with VirtualBox virtualization
-- Box: 'hashicorp/precise64'
+- Box: 'ubuntu/trusty64'
 - Using Ansible for config management
 
 ## Backend architecture

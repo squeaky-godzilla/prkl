@@ -24,7 +24,7 @@ def importData(json_file, dbase):
         insertSong(json.loads(line), dbase)
     print "[PRKL import] collection now has total %i records" % (prkl_dbase.songs.count())
 
-prkl_dbase = connectMongoDB('localhost',27017)
+prkl_dbase = connectMongoDB('100.0.10.10',27017)
 if purge.lower() == "purge":
     try:
         print "[PRKL purge] purging songs collection"

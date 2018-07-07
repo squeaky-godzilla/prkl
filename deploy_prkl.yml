@@ -1,0 +1,34 @@
+---
+- name: Deploy PRKL
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Cleanup vagrants
+      file:
+        state: absent
+        path: "{{ item }}"
+      with_items:
+        - "./infra/backend/.vagrant"
+        - "./infra/frontend/.vagrant"
+
+
+    - name: Deploy MongoDB backend
+      shell:
+        cmd: vagrant up
+        chdir: ./infra/backend/
+      register: progress
+
+    - name: Show progress
+      debug: msg="{{ progress.stdout }}"
+      debug: msg="{{ progress.stderr }}"
+
+    - name: Deploy Flask API frontend
+      shell:
+        cmd: vagrant up
+        chdir: ./infra/frontend/
+      register: progress
+
+    - name: Show progress
+      debug: msg="{{ progress.stdout }}"
+      debug: msg="{{ progress.stderr }}"

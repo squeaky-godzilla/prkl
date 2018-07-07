@@ -6,7 +6,6 @@ from pymongo import MongoClient as mongo
 from pymongo import TEXT
 from bson.json_util import dumps
 from flask import request, jsonify, Flask
-from flask_api import status
 
 
 be_hostname = "192.168.10.10"
@@ -14,10 +13,12 @@ be_port = 27017
 
 app = Flask(__name__)
 
+
 def connect_mongo(ip, port):
     client = mongo(ip, port)
     dbase = client.prkl
     return dbase
+
 
 def format_output(output):
     result = {}
@@ -28,6 +29,7 @@ def format_output(output):
     except:
         result = output
     return result
+
 
 def get_all(collection):
     output = json.loads(dumps(collection.find({})))
@@ -116,4 +118,4 @@ def route_get_song_rating(song_id):
     return jsonify(get_song_rating(song_id,songs_db.ratings))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

@@ -4,6 +4,15 @@
   become: true
 
   tasks:
+  - name: Flask API server - create prkl-api group
+    group:
+      name: prkl-api
+      state: present
+
+  - name: Flask API server - create prkl-api user
+    user:
+      name: prkl-api
+      group: prkl-api
 
   - name: Flask API server - install pip
     apt:
@@ -17,7 +26,6 @@
     with_items:
       - pymongo
       - flask
-
 
   - name: Flask API server - copy API source code
     copy:
@@ -37,10 +45,8 @@
       name: prkl-api
       state: started
 
-  - name: Flask API server - test API get_all response
+  - name: Flask API server - test API get_all loopback response
     uri:
       url: http://127.0.0.1:5000/songs/
-      return_content: yes
-    register: this
-    until: "'artist' in this.content"
+    # until: "'artist' in this.content"
     retries: 5

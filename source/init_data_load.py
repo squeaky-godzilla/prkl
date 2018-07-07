@@ -1,11 +1,15 @@
 import json, sys
 from pymongo import MongoClient as mongo
 
+
 source_file = sys.argv[1]
 try:
     purge = sys.argv[2]
 except:
     purge = "nope"
+
+be_hostname, be_port = sys.argv[3].split(':')
+
 
 def connectMongoDB(ip,port):
     client = mongo(ip,port)
@@ -24,7 +28,7 @@ def importData(json_file, dbase):
         insertSong(json.loads(line), dbase)
     print "[PRKL import] collection now has total %i records" % (prkl_dbase.songs.count())
 
-prkl_dbase = connectMongoDB('192.168.10.10',27017)
+prkl_dbase = connectMongoDB(be_hostname,int(be_port))
 if purge.lower() == "purge":
     try:
         print "[PRKL purge] purging songs collection"

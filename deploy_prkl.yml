@@ -23,6 +23,10 @@
       debug: msg="{{ progress.stdout }}"
       debug: msg="{{ progress.stderr }}"
 
+    - name: Load testing data
+      shell:
+        cmd: python ./source/init_data_load.py ./data/songs.json purge 192.168.10.10:27017
+
     - name: Deploy Flask API frontend
       shell:
         cmd: vagrant up

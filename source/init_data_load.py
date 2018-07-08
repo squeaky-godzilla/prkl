@@ -3,12 +3,8 @@ from pymongo import MongoClient as mongo
 
 
 source_file = sys.argv[1]
-try:
-    purge = sys.argv[2]
-except:
-    purge = "nope"
 
-be_hostname, be_port = sys.argv[3].split(':')
+be_hostname, be_port = sys.argv[2].split(':')
 
 
 
@@ -31,10 +27,6 @@ def import_data(json_file, dbase):
     print "[PRKL import] collection now has total %i records" % (prkl_dbase.songs.count())
 
 prkl_dbase = connect_mongo(be_hostname,int(be_port))
-if purge.lower() == "purge":
-    try:
-        print "[PRKL purge] purging songs collection"
-        prkl_dbase.songs.drop()
-    except:
-        pass
+print "[PRKL purge] purging songs collection"
+prkl_dbase.songs.drop()
 import_data(source_file,prkl_dbase)

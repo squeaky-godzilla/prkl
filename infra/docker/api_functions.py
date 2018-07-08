@@ -8,7 +8,7 @@ from bson.json_util import dumps
 from flask import request, jsonify, Flask
 
 
-be_hostname = "192.168.10.100"
+be_hostname = "10.5.0.6"
 be_port = 27017
 
 

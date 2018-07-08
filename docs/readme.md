@@ -1,7 +1,7 @@
 # PRKL Solution Documentation
 
 ## Dev environment
-The dev environment is built on VirtualBox orchestrated by Vagrant
+The dev environment is built on VirtualBox orchestrated by Vagrant. Ansible is used as the main config management & deployment tool.
 
 ## AWS Architecture
 ![alt text](https://github.com/squeaky-godzilla/prkl/raw/master/docs/PRKL-Infra_AWS.jpg)

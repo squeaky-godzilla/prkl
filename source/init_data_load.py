@@ -11,28 +11,30 @@ except:
 be_hostname, be_port = sys.argv[3].split(':')
 
 
-def connectMongoDB(ip,port):
+
+def connect_mongo(ip,port):
+    print "[PRKL import] connecting to %s:%i" % (ip,port)
     client = mongo(ip,port)
     dbase = client.prkl
     return dbase
 
-def insertSong(json,dbase):
+def insert_song(json,dbase):
     songs = dbase.songs
     song_id = songs.insert_one(json)
 
-def importData(json_file, dbase):
+def import_data(json_file, dbase):
     json_obj = open(json_file,"r")
     print "[PRKL import] loading file %s" % (str(json_file))
     for line in json_obj:
         # json_list.append(json.loads(line))
-        insertSong(json.loads(line), dbase)
+        insert_song(json.loads(line), dbase)
     print "[PRKL import] collection now has total %i records" % (prkl_dbase.songs.count())
 
-prkl_dbase = connectMongoDB(be_hostname,int(be_port))
+prkl_dbase = connect_mongo(be_hostname,int(be_port))
 if purge.lower() == "purge":
     try:
         print "[PRKL purge] purging songs collection"
         prkl_dbase.songs.drop()
     except:
         pass
-importData(source_file,prkl_dbase)
+import_data(source_file,prkl_dbase)

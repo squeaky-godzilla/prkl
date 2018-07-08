@@ -8,10 +8,8 @@ from bson.json_util import dumps
 from flask import request, jsonify, Flask
 
 
-be_hostname = "192.168.10.10"
+be_hostname = "192.168.10.100"
 be_port = 27017
-
-app = Flask(__name__)
 
 
 def connect_mongo(ip, port):
@@ -83,6 +81,10 @@ def get_song_rating(id, rating_collection):
         result = 'song_id=%s not found' % (id)
     return result
 
+app = Flask(__name__)
+app.config['DEFAULT_RENDERERS'] = [
+    'flask.ext.api.renderers.JSONRenderer'
+]
 
 @app.route('/songs/', methods=['GET'])
 def route_get_all():

@@ -1,13 +1,17 @@
 # PRKL Solution Documentation
 
+## Dev environment
+The dev environment is built on VirtualBox orchestrated by Vagrant
+
 ## AWS Architecture
 ![alt text](https://github.com/squeaky-godzilla/prkl/raw/master/docs/PRKL-Infra_AWS.jpg)
-Since the primary dev environment was built on VirtualBox orchestrated by Vagrant, also the AWS architecture is designed using more traditional approach with EC2 instances.
+Since the primary dev environment was VM based, also the AWS architecture is designed using more traditional approach with EC2 instances.
 
 ### Architecture specifics
 - since the API is fairly lightweight, it can be very easily deployed as a container or serverless Lambda function
 - Lambda function would eliminate the need of ELB group
 - deploying as a container would require building orchestrated solution on Kubernetes or Mesosphere or Docker Swarm, ideally utilizing managed solution by AWS
+- solution management is handled via a bastion host placed in the public subnet
 
 ### Request processing:
 - user request comes through the internet gateway

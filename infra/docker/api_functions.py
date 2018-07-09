@@ -5,13 +5,10 @@ import re
 from pymongo import MongoClient as mongo
 from pymongo import TEXT
 from bson.json_util import dumps
-from bson.objectid import ObjectId
 from flask import request, jsonify, Flask
 
-try:
-    be_hostname = sys.argv[1]
-except:
-    be_hostname = "192.168.10.100"
+
+be_hostname = "10.5.0.6"
 be_port = 27017
 
 
@@ -43,7 +40,7 @@ def get_diff_above(collection, diff_threshold):
                     {"$group": {"_id": "null","avg_difficulty": { "$avg": "$difficulty" }}}])))
     avg_difficulty = {}
     avg_difficulty['avg_difficulty'] = avg_difficulty_output[0]['avg_difficulty']
-    output = json.loads(dumps(collection.find_one( { "difficulty":  {"$gt" : diff_threshold}  } )))
+    output = json.loads(dumps(collection.find( { "difficulty":  {"$gt" : diff_threshold}  } )))
     result = format_output(output)
     return [result, avg_difficulty]
 
@@ -56,23 +53,13 @@ def song_search(collection, search_string):
     return result
 
 
-def add_song_rating(id, rating, rating_collection, song_collection):
+def add_song_rating(id, rating, rating_collection):
     print("rating function call, parameters id:%s rating:%f" % (id,rating), file=sys.stdout)
-    try:
-        id_search = song_collection.find({"_id": ObjectId(id) })
-    except:
-        result = "invalid MongoDB id"
-        id_search = []
-    print(dumps(id_search), file=sys.stdout)
-    if id_search:
-        if 1 <= rating <= 5:
-            result = "adding rating to %s" % (id)
-            rating_collection.insert_one({"song_id": id, "song_rating": rating})
-        else:
-            result = "invalid rating"
+    if 1 <= rating <= 5:
+        print("adding rating to %s" % (id), file=sys.stdout)
+        rating_collection.insert_one({"song_id": id, "song_rating": rating})
     else:
-        result = "id: %s does not exist in the song database" % (id)
-    return result
+        print ("invalid rating", file=sys.stderr)
 
 def get_song_rating(id, rating_collection):
     # print(dumps(rating_collection.find({})), file=sys.stdout)
@@ -93,11 +80,6 @@ def get_song_rating(id, rating_collection):
     except:
         result = 'song_id=%s not found' % (id)
     return result
-
-
-
-
-
 
 app = Flask(__name__)
 app.config['DEFAULT_RENDERERS'] = [
@@ -129,7 +111,8 @@ def route_add_song_rating():
     songs_db = connect_mongo(be_hostname, be_port)
     song_id = request.form['song_id']
     rating = float(request.form['rating'])
-    return add_song_rating(song_id, rating, songs_db.ratings, songs_db.songs) + "\n"
+    add_song_rating(song_id, rating, songs_db.ratings)
+    return "rating=%s added to song_id=%s\n" % (rating, song_id)
 
 @app.route('/songs/avg/rating/<song_id>', methods=['GET'])
 def route_get_song_rating(song_id):

@@ -1,0 +1,52 @@
+---
+- name: Flask API server - Setup the Flask API server
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Flask API server - create prkl-api group
+    group:
+      name: prkl-api
+      state: present
+
+  - name: Flask API server - create prkl-api user
+    user:
+      name: prkl-api
+      group: prkl-api
+
+  - name: Flask API server - install pip
+    apt:
+      name: python-pip
+      state: present
+      update_cache: yes
+
+  - name: Flask API server - install pip dependancies
+    pip:
+      name: "{{ item }}"
+    with_items:
+      - pymongo
+      - flask
+
+  - name: Flask API server - copy API source code
+    copy:
+      src: ../../source/api_functions.py
+      dest: /usr/bin/api_functions.py
+      owner: prkl-api
+      group: prkl-api
+      mode: 0644
+
+  - name: Flask API server - copy upstart config
+    copy:
+      src: ../../source/prkl-api.conf
+      dest: /etc/init/prkl-api.conf
+
+  - name: Flask API server - start Flask API service
+    service:
+      name: prkl-api
+      state: started
+
+  - name: Flask API server - test API get_all loopback response
+    uri:
+      url: http://127.0.0.1:5000/songs/
+    # until: "'artist' in this.content"
+    retries: 5

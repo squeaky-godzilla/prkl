@@ -1,0 +1,21 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "5000:5000"
+    networks:
+      lab_net:
+        ipv4_address: 10.5.0.5
+  mongo:
+    image: "mongo:latest"
+    networks:
+      lab_net:
+        ipv4_address: 10.5.0.6
+
+networks:
+  lab_net:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16

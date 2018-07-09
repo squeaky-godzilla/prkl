@@ -4,26 +4,26 @@
   become: true
 
   tasks:
-  - name: mongodb - import public key
+  - name: MongoDB server - import public key
     shell: "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4"
 
-  - name: mongodb - add repo
+  - name: MongoDB server - add repo
     apt_repository:
       repo: deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse
       state: present
 
-  - name: mongodb - install
+  - name: MongoDB server - install
     apt:
       name: mongodb-org
       state: present
       update_cache: yes
 
-  - name: mongodb - copy config file
+  - name: MongoDB server - copy config file
     copy:
       src: "mongod.conf"
       dest: "/etc/mongod.conf"
 
-  - name: mongodb - restart service
+  - name: MongoDB server - restart service
     service:
       name: mongod
       state: restarted

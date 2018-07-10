@@ -13,6 +13,19 @@ Since the primary dev environment was VM based, also the AWS architecture is des
 - deploying as a container would require building orchestrated solution on Kubernetes or Mesosphere or Docker Swarm, ideally utilizing managed solution by AWS
 - solution management is handled via a bastion host placed in the public subnet
 
+### Scaling for spike traffic
+accommodating spike traffic can be done in following ways:
+
+- building fewer instances large enough to accomodate spike (scale up)
+- building many smaller instances (scale out)
+
+Application frontend (FLASK) is not performance optimized for scale up approach,
+however it's very well suited for scaling out onto smaller instances, be it small EC2 instances or containers.
+
+The scale out can be automated by enabling autoscaling group and elastic loadbalancer in AWS, or by observing the traffic spike pattern and scheduling the scale out accordingly.
+
+The selected backend (MongoDB) is also a scale out friendly infrastructure (although there are scale up deployments of the technology as well), however the scaling of it's components is more complex than the Flask frontend. In the case of MongoDB, I'd suggest careful analytics of the compute and storage capacity demand and adjust the growth strategy. Because the datastore and query processing function is decoupled, it gives options to achieve optimal performance even in large data volumes. 
+
 ### Request processing:
 - user request comes through the internet gateway
 - DNS service Route 53 directs it to the Elastic Load Balancer

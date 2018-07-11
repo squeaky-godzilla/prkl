@@ -1,0 +1,12 @@
+---
+test_name: get all songs
+
+stages:
+  - name: get the songs endpoint
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+
+    response:
+      status_code: 200

@@ -1,0 +1,15 @@
+---
+test_name: load JSON file with songs
+
+stages:
+
+  - name: get the songs above some valid level
+
+    request:
+      url: http://localhost:5000/songs/avg/difficulty/
+      method: GET
+      params:
+        level: 6
+
+    response:
+      status_code: 200

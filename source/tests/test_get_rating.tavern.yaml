@@ -1,15 +1,22 @@
 ---
-test_name: load JSON file with songs
+test_name: Get song rating
 
 stages:
 
-  - name: get the songs above some valid level
+  - name: valid song id
 
     request:
-      url: http://localhost:5000/songs/avg/difficulty/
+      url: http://localhost:5000/songs/avg/rating/5b464b879dc6d61cbaedc4c6
       method: GET
-      params:
-        level: 6
 
     response:
       status_code: 200
+
+  - name: invalid song id
+
+    request:
+      url: http://localhost:5000/songs/avg/rating/porkpie
+      method: GET
+
+    response:
+      status_code: 400

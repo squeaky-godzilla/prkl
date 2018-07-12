@@ -8,7 +8,7 @@ from pymongo import MongoClient as mongo
 from pymongo import TEXT
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from flask import request, jsonify, Flask, redirect, url_for, abort
+from flask import request, jsonify, Flask, url_for, abort
 from werkzeug import secure_filename
 
 def logger(message):
@@ -64,23 +64,29 @@ def format_output(output):
 
 
 def insert_song(song_dictionary, dbase):
-    bad_keys = format_chk(song_dictionary, record_format, record_format["released"])
-    if len(bad_keys) == 0:
-        songs = dbase.songs
-        song_id = songs.insert_one(song_dictionary)
-    else:
-        logger("[PRKL import] incorrect song record format: %s ...skipping" % bad_keys)
-        pass
+    songs = dbase.songs
+    song_id = songs.insert_one(song_dictionary)
 
 
 def import_data(json_file, dbase):
     json_obj = open(json_file, "r")
-    logger("[PRKL import] loading file %s" % (str(json_file)))
+    logger("[PRKL import] loading file %s ... testing for format defects" % (str(json_file)))
+    for line in json_obj:
+        bad_keys = format_chk(json.loads(line), record_format, record_format["released"])
+        if len(bad_keys) > 0:
+            logger("invalid song import file")
+            abort(400)
+        else:
+            pass
+    json_obj.close()
+    json_obj = open(json_file, "r")
     for idx, line in enumerate(json_obj):
         try:
+            print(line)
             insert_song(json.loads(line), dbase)
         except Exception, err:
             logger("[PRKL import] line %i: %s" % (idx,str(err)))
+    json_obj.close()
     return ("[PRKL import] collection now has total %i records\n"
             % (dbase.songs.count()))
 
@@ -162,9 +168,9 @@ def get_song_rating(id, rating_collection):
                                 {"$min": "$song_rating"}}}
                         ])))[0]["min_rating"]
         result = {id: {"avg": avg_rating_output, "max": max_rating_output, "min": min_rating_output}}
-    except:
-        result = 'song_id=%s not found' % (id)
-    return result
+    except Exception, err:
+        logger(err)
+        abort(400)
 
 
 UPLOAD_FOLDER = "./upload/"
@@ -259,9 +265,10 @@ def route_add_song_rating():
 def route_get_song_rating(song_id):
     try:
         songs_db = connect_mongo(be_hostname, be_port)
-        return jsonify(get_song_rating(song_id, songs_db.ratings)), 201
-    except:
-        abort(500)
+        return jsonify(get_song_rating(song_id, songs_db.ratings))
+    except Exception, err:
+        logger(err)
+        abort(400)
 
 
 if __name__ == "__main__":

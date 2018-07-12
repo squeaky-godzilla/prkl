@@ -1,0 +1,22 @@
+---
+test_name: Get song rating
+
+stages:
+
+  - name: valid song id
+
+    request:
+      url: http://localhost:5000/songs/avg/rating/5b464b879dc6d61cbaedc4c6
+      method: GET
+
+    response:
+      status_code: 200
+
+  - name: invalid song id
+
+    request:
+      url: http://localhost:5000/songs/avg/rating/porkpie
+      method: GET
+
+    response:
+      status_code: 400

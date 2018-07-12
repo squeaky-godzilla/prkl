@@ -1,0 +1,37 @@
+---
+test_name: Upload song records from a file
+
+stages:
+
+  - name: upload valid file
+
+    request:
+      url: http://localhost:5000/songs/load/
+      method: POST
+      files:
+        myfile: ../data/songs.json
+
+    response:
+      status_code: 201
+
+  - name: upload valid file, one line wrong format
+
+    request:
+      url: http://localhost:5000/songs/load/
+      method: POST
+      files:
+        myfile: ../data/songs.json
+
+    response:
+      status_code: 400
+
+  - name: upload valid file, totally wrong
+
+    request:
+      url: http://localhost:5000/songs/load/
+      method: POST
+      files:
+        myfile: api_functions.py
+
+    response:
+      status_code: 400

@@ -1,0 +1,26 @@
+---
+test_name: Search for a song
+
+stages:
+
+  - name: get the songs above some valid level
+
+    request:
+      url: http://localhost:5000/songs/search/
+      method: GET
+      params:
+        string: bou
+
+    response:
+      status_code: 200
+
+  - name: search in artist
+
+    request:
+      url: http://localhost:5000/songs/search/
+      method: GET
+      params:
+        string: yous
+
+    response:
+      status_code: 200

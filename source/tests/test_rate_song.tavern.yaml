@@ -1,0 +1,100 @@
+---
+test_name: Set a song rating
+
+stages:
+
+  - name: 1 - set rating to float, invalid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: bobek
+        rating: 3.5
+
+    response:
+      status_code: 400
+
+  - name: 2 - set rating to valid integer, invalid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: 6
+        rating: 3
+
+    response:
+      status_code: 400
+
+  - name: 4 - set rating to valid integer, valid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: 5b464b879dc6d61cbaedc4c6
+        rating: 3
+
+    response:
+      status_code: 201
+
+
+  - name: 5 - set rating to float, valid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: 5b464b879dc6d61cbaedc4c6
+        rating: 3.65
+
+    response:
+      status_code: 400
+
+  - name: 6 - no rating, valid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: 5b464b879dc6d61cbaedc4c6
+
+    response:
+      status_code: 400
+
+  - name: 7 - no song id, valid rating, valid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        rating: 3
+
+    response:
+      status_code: 400
+
+  - name: 8 - set rating to larger integer, valid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: 5b464b879dc6d61cbaedc4c6
+        rating: 44
+
+    response:
+      status_code: 400
+
+
+  - name: 9 - set rating to larger float, valid id
+
+    request:
+      url: http://localhost:5000/songs/rating
+      method: POST
+      data:
+        song_id: 5b464b879dc6d61cbaedc4c6
+        rating: 34.65
+
+    response:
+      status_code: 400

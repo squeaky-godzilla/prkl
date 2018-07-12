@@ -1,0 +1,46 @@
+---
+test_name: get songs above certain level
+
+stages:
+
+  - name: get the songs above some valid level
+
+    request:
+      url: http://localhost:5000/songs/avg/difficulty/
+      method: GET
+      params:
+        level: 6
+
+    response:
+      status_code: 200
+
+  - name: get the songs above crazy level
+
+    request:
+      url: http://localhost:5000/songs/avg/difficulty/
+      method: GET
+      params:
+        level: 99999999999999999999999999999999999999999999999
+
+    response:
+      status_code: 400
+
+  - name: string input
+
+    request:
+      url: http://localhost:5000/songs/avg/difficulty/
+      method: GET
+      params:
+        level: hovno
+
+    response:
+      status_code: 400
+
+  - name: no param
+
+    request:
+      url: http://localhost:5000/songs/avg/difficulty/
+      method: GET
+
+    response:
+      status_code: 200

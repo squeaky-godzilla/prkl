@@ -8,7 +8,7 @@ from bson.json_util import dumps
 from flask import request, jsonify, Flask
 
 
-be_hostname = "10.5.0.6"
+be_hostname = "192.168.10.100"
 be_port = 27017
 
 
@@ -53,13 +53,16 @@ def song_search(collection, search_string):
     return result
 
 
-def add_song_rating(id, rating, rating_collection):
+def add_song_rating(id, rating, rating_collection, song_collection):
     print("rating function call, parameters id:%s rating:%f" % (id,rating), file=sys.stdout)
-    if 1 <= rating <= 5:
-        print("adding rating to %s" % (id), file=sys.stdout)
-        rating_collection.insert_one({"song_id": id, "song_rating": rating})
+    if song_collection.find_one({"_id": id }):
+        if 1 <= rating <= 5:
+            print("adding rating to %s" % (id), file=sys.stdout)
+            rating_collection.insert_one({"song_id": id, "song_rating": rating})
+        else:
+            print ("invalid rating", file=sys.stderr)
     else:
-        print ("invalid rating", file=sys.stderr)
+        print("id: %s does not exist in the song database", file=sys.stderr)
 
 def get_song_rating(id, rating_collection):
     # print(dumps(rating_collection.find({})), file=sys.stdout)
@@ -80,6 +83,11 @@ def get_song_rating(id, rating_collection):
     except:
         result = 'song_id=%s not found' % (id)
     return result
+
+
+
+
+
 
 app = Flask(__name__)
 app.config['DEFAULT_RENDERERS'] = [
@@ -111,7 +119,7 @@ def route_add_song_rating():
     songs_db = connect_mongo(be_hostname, be_port)
     song_id = request.form['song_id']
     rating = float(request.form['rating'])
-    add_song_rating(song_id, rating, songs_db.ratings)
+    add_song_rating(song_id, rating, songs_db.ratings, songs_db.songs)
     return "rating=%s added to song_id=%s\n" % (rating, song_id)
 
 @app.route('/songs/avg/rating/<song_id>', methods=['GET'])

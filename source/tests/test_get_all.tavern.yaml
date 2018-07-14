@@ -2,11 +2,92 @@
 test_name: get all songs
 
 stages:
+
   - name: get the songs endpoint
 
     request:
       url: http://localhost:5000/songs/
       method: GET
+
+    response:
+      status_code: 200
+
+  - name: get the songs endpoint, pagination, non-int offset
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+      params:
+        offset: 1.3
+        per_page: 2
+
+    response:
+      status_code: 400
+
+  - name: get the songs endpoint, pagination, non-int per_page
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+      params:
+        offset: 2
+        per_page: 9.3
+
+
+    response:
+      status_code: 400
+
+
+  - name: get the songs endpoint, pagination, non-number per_page
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+      params:
+        offset: 2
+        per_page: goat
+
+
+    response:
+      status_code: 400
+
+
+  - name: get the songs endpoint, pagination, non-number offset
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+      params:
+        offset: sheep
+        per_page: 2
+
+
+    response:
+      status_code: 400
+
+
+  - name: get the songs endpoint, pagination, missing offset
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+      params:
+        per_page: 2
+
+
+    response:
+      status_code: 200
+
+
+
+  - name: get the songs endpoint, pagination, missing per_page
+
+    request:
+      url: http://localhost:5000/songs/
+      method: GET
+      params:
+        offset: 4
+
 
     response:
       status_code: 200

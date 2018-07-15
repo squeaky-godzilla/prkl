@@ -233,10 +233,10 @@ def route_get_diff_above():
         abort(500)
 
 
-@app.route('/songs/search/', methods=['GET'])
+@app.route('/songs/search', methods=['GET'])
 def route_song_search():
     try:
-        search = request.args.get('string', default = '')
+        search = request.args.get('message', default = '')
     except:
         pass
     try:

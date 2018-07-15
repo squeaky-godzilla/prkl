@@ -1,0 +1,59 @@
+---
+- name: Flask API server - Setup the Flask API server
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Flask API server - create prkl-api group
+    group:
+      name: prkl-api
+      state: present
+
+  - name: Flask API server - create prkl-api user
+    user:
+      name: prkl-api
+      group: prkl-api
+
+  - name: Flask API server - install pip
+    apt:
+      name: python-pip
+      state: present
+      update_cache: yes
+
+  - name: Flask API server - install pip dependancies
+    pip:
+      name: "{{ item }}"
+    with_items:
+      - pymongo
+      - flask
+
+  - name: Flask API server - copy API source code
+    copy:
+      src: ../../../source/app.py
+      dest: /usr/bin/app.py
+      owner: prkl-api
+      group: prkl-api
+      mode: 0644
+
+  - name: Flask API server - copy API source code - snippets
+    copy:
+      src: ../../../source/snippets/checks.py
+      dest: /usr/bin/
+      owner: prkl-api
+      group: prkl-api
+      mode: 0644
+
+  - name: Flask API server - copy upstart config
+    copy:
+      src: prkl-api.conf
+      dest: /etc/init/prkl-api.conf
+
+  - name: Flask API server - start Flask API service
+    service:
+      name: prkl-api
+      state: started
+    become_user: prkl-api
+
+  - name: Load songs into the mongoDB
+    command: 'curl -F myfile=@../../../data/songs.json http://localhost:5000/songs/load/'
+    delegate_to: localhost

@@ -1,0 +1,29 @@
+---
+- name: Setup the MongoDB backend server
+  hosts: all
+  become: true
+
+  tasks:
+  - name: MongoDB server - import public key
+    shell: "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4"
+
+  - name: MongoDB server - add repo
+    apt_repository:
+      repo: deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse
+      state: present
+
+  - name: MongoDB server - install
+    apt:
+      name: mongodb-org
+      state: present
+      update_cache: yes
+
+  - name: MongoDB server - copy config file
+    copy:
+      src: "mongod.conf"
+      dest: "/etc/mongod.conf"
+
+  - name: MongoDB server - restart service
+    service:
+      name: mongod
+      state: restarted

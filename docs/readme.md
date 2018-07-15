@@ -41,4 +41,5 @@ The selected backend (MongoDB) is also a scale out friendly infrastructure (alth
 
 ### CICD pipeline
 ![alt text](https://github.com/squeaky-godzilla/prkl/raw/master/docs/PRKL_CICD.jpg)
+
 Here is a simple suggestion how a multi environment deployment can be done with combination of Jenkins and Docker orchestration (K8s).

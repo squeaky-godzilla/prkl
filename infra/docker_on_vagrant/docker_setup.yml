@@ -9,27 +9,27 @@
     apt:
       update_cache: yes
 
-  - name: Install linux-image-extra-* for Ubuntu Trusty 14.04 (see https://docs.docker.com/engine/installation/linux/ubuntu/#recommended-extra-packages-for-trusty-1404)
+  - name: Install linux-image-extra-*
     apt:
       name: linux-image-extra-3.13.0-106-generic
       state: latest
 
-  - name: Install linux-image-extra-* for Ubuntu Trusty 14.04 (see https://docs.docker.com/engine/installation/linux/ubuntu/#recommended-extra-packages-for-trusty-1404)
+  - name: Install linux-image-extra-*
     apt:
       name: linux-image-extra-virtual
       state: latest
 
-  - name: Install apt-transport-https (see https://docs.docker.com/engine/installation/linux/ubuntu/#recommended-extra-packages-for-trusty-1404)
+  - name: Install apt-transport-https
     apt:
       name: apt-transport-https
       state: latest
 
-  - name: Install ca-certificates (see https://docs.docker.com/engine/installation/linux/ubuntu/#recommended-extra-packages-for-trusty-1404)
+  - name: Install ca-certificates
     apt:
       name: ca-certificates
       state: latest
 
-  - name: Install software-properties-common (see https://docs.docker.com/engine/installation/linux/ubuntu/#recommended-extra-packages-for-trusty-1404)
+  - name: Install software-properties-common
     apt:
       name: software-properties-common
       state: latest
@@ -42,14 +42,14 @@
     register: add_repository_key
     ignore_errors: true
 
-  - name: Ensure curl is present (on older systems without SNI).
+  - name: Ensure curl is present
     apt:
       name: curl
       state: latest
     sudo: yes
     when: add_repository_key|failed
 
-  - name: Add Docker apt key (alternative for older systems without SNI).
+  - name: Add Docker apt key
     shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
     args:
       warn: no
@@ -72,17 +72,19 @@
       state: restarted
       enabled: yes
 
-  - name: Install Docker Compose (if configured).
-    get_url:
-      url: https://github.com/docker/compose/releases/download/1.13.0/docker-compose-Linux-x86_64
-      dest: /usr/local/bin/docker-compose
-      mode: 0755
+  - name: Install pip
+    apt:
+      name: python-pip
+      state: latest
+
+  - name: Install Docker Compose
+    pip:
+      name: docker-compose
+      version: '1.9.0'
 
   - name: Add vagrant user to the docker group
     user:
       name: vagrant
       groups: docker
       append: yes
-
-  - name: Run the solution setup
-    include: env_setup.yml
+      state: present

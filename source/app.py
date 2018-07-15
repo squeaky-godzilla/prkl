@@ -42,6 +42,7 @@ BE_PORT = 27017
 #arguments input
 try:
     BE_HOSTNAME, BE_PORT = sys.argv[1].split(':')
+    BE_PORT = int(BE_PORT)
 except:
     pass
 

@@ -16,12 +16,6 @@ sys.path.insert(0, './snippets')
 from checks import format_chk
 
 
-
-#flask pagination related imports
-from flask import Blueprint
-from flask_paginate import Pagination, get_page_parameter
-
-
 def logger(message):
     print("[PRKL API log] %s\n" % (message), file=sys.stdout)
 

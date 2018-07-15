@@ -1,18 +1,10 @@
-# Vagrant infrastructure for PRKL (Linux or MacOSX)
+# Infrastructure-as-a-code Lab
 
-Good old fashioned VM based infrastructure for PRKL
+## Docker (requires Docker, Docker Compose)
+If you are able to run Docker on your machine, you can deploy the solution in containers. In real life, the MongoDB backend is probably not the best option - it is better to deploy it on a dedicated machine, with reasonably powerful storage subsystem. But for the purposes of the demonstration it's enough.
 
-## Prerequisites
+## Docker on Vagrant (requires VirtualBox, Vagrant, Ansible)
+If you are unable to run Docker on your system directly, go and deploy it within a Vagrant VM.
 
-You will need to install following things:
-- VirtualBox: to emulate hypervisor
-- Vagrant: to simplify the VM provisioning
-- Ansible: to orchestrate provisioning and deployment
-
-*frontend* folder holds frontend infrastructure information
-*backend* folder holds backend infrastructure information
-
-## Installation
-- go to /infra/vagrant/ folder
-- run the deployment playbook by `ansible-playbook deploy_prkl.yml -K`
-- the playbook will need root privileges, hence the `-K`
+## Vagrant VM based solution (requires VirtualBox, Vagrant, Ansible)
+VM based deployment powered by Vagrant and Ansible

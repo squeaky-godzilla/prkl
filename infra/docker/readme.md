@@ -12,17 +12,17 @@ This is probably the fastest and easiest method to deploy. Extensively tested on
 
 'Dockerfile' for the Flask API frontend container:
 
-`FROM python:2.7
+```FROM python:2.7
 WORKDIR /app
 COPY app.py /app
 COPY snippets /app
 RUN pip install pymongo flask
 ENTRYPOINT ["python"]
-CMD ["app.py","10.5.0.6:27017"]`
+CMD ["app.py","10.5.0.6:27017"]```
 
-'docker-compose.yml' for the whole service:
+docker-compose.yml for the whole service:
 
-`version: '2'
+```version: '2'
 services:
   prkl_api:
     build: .
@@ -42,7 +42,7 @@ networks:
     driver: bridge
     ipam:
      config:
-       - subnet: 10.5.0.0/16`
+       - subnet: 10.5.0.0/16```
 
 
 ### Windows host

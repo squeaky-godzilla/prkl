@@ -18,7 +18,8 @@ COPY app.py /app
 COPY snippets /app
 RUN pip install pymongo flask
 ENTRYPOINT ["python"]
-CMD ["app.py","10.5.0.6:27017"]```
+CMD ["app.py","10.5.0.6:27017"]
+```
 
 docker-compose.yml for the whole service:
 
@@ -42,7 +43,8 @@ networks:
     driver: bridge
     ipam:
      config:
-       - subnet: 10.5.0.0/16```
+       - subnet: 10.5.0.0/16
+       ```
 
 
 ### Windows host

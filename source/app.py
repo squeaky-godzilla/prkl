@@ -8,8 +8,7 @@ from pymongo import MongoClient as mongo
 from pymongo import TEXT
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from flask import request, jsonify, Flask, abort, render_template
-# from werkzeug import secure_filename
+from flask import request, jsonify, Flask, abort
 
 
 sys.path.insert(0, './snippets')

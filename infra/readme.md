@@ -1,17 +1,18 @@
-# Infrastructure for PRKL
+# Vagrant infrastructure for PRKL (Linux or MacOSX)
+
+Good old fashioned VM based infrastructure for PRKL
+
+## Prerequisites
+
+You will need to install following things:
+- VirtualBox: to emulate hypervisor
+- Vagrant: to simplify the VM provisioning
+- Ansible: to orchestrate provisioning and deployment
 
 *frontend* folder holds frontend infrastructure information
 *backend* folder holds backend infrastructure information
 
-## Architecture & deployment
-
-nginx proxy loadbalancer --- frontend API server (hosts FLASK) --- backend MongoDB cluster
-
-- Built on Vagrant with VirtualBox virtualization
-- Box: 'ubuntu/trusty64'
-- Using Ansible for config management
-
-## Backend architecture
-
-- datastore backend is MongoDB database
-- (clustered for scaling)
+## Installation
+- go to /infra/vagrant/ folder
+- run the deployment playbook by `ansible-playbook deploy_prkl.yml -K`
+- the playbook will need root privileges, hence the `-K`

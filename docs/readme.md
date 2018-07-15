@@ -22,7 +22,7 @@ accommodating spike traffic can be done in following ways:
 Application frontend (FLASK) is not performance optimized for scale up approach,
 however it's very well suited for scaling out onto smaller instances, be it small EC2 instances or containers.
 
-The scale out can be automated by enabling autoscaling group and elastic loadbalancer in AWS, or by observing the traffic spike pattern and scheduling the scale out accordingly.
+The scale out can be automated by enabling autoscaling group and elastic loadbalancer in AWS, or by observing the traffic spike pattern and scheduling the scale out accordingly. The autoscaling group method is not very efficient for sudden workload spikes.
 
 The selected backend (MongoDB) is also a scale out friendly infrastructure (although there are scale up deployments of the technology as well), however the scaling of it's components is more complex than the Flask frontend. In the case of MongoDB, I'd suggest careful analytics of the compute and storage capacity demand and adjust the growth strategy. Because the datastore and query processing function is decoupled, it gives options to achieve optimal performance even in large data volumes.
 

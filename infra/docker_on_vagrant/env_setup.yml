@@ -1,0 +1,41 @@
+---
+- name: Clone the PRKL repo
+  git:
+    repo: 'https://github.com/squeaky-godzilla/prkl'
+    dest: /home/vagrant/prkl/
+  become_user: vagrant
+
+- name: Creates snippets directory
+  file: path=/home/vagrant/prkl/infra/docker/snippets/ state=directory
+  become_user: vagrant
+
+# - name: Creates snippets directory
+#   file: path=/home/vagrant/prkl/infra/docker// state=directory
+
+- name: Copy the app to docker project folder
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    remote_src: yes
+  with_items:
+    - { src: '/home/vagrant/prkl/source/app.py', dest: '/home/vagrant/prkl/infra/docker/app.py'}
+    - { src: '/home/vagrant/prkl/source/snippets/checks.py', dest: '/home/vagrant/prkl/infra/docker/snippets/checks.py'}
+  become_user: vagrant
+
+- name: Build and deploy the Docker Compose
+  docker_service:
+    project_name: prkl
+    project_src: /home/vagrant/prkl/infra/docker
+
+- name: Install pip dependancies for testing
+  pip:
+    name: "{{ item }}"
+    extra_args: --upgrade
+  with_items:
+    - setuptools
+    - pytest
+    - pyyaml
+    - tavern
+
+- name: Load songs into the mongoDB
+  command: 'curl -F myfile=@/home/vagrant/prkl/data/songs.json http://localhost:5000/songs/load/'

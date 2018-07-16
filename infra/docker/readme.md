@@ -1,5 +1,7 @@
 # PRKL Docker version
 
+This will deploy two containers on your Docker host, one is running the API frontend and the other is running the MongoDB.
+
 This is probably the fastest and easiest method to deploy. Extensively tested on Linux, tested on MacOSX and somewhat tested on Windows systems. Creates a backend network 'lab_net' where both containers communicate. API port :5000 is forwarded to the localhost address, use localhost address to communicate to the API.
 
 ## Installation:

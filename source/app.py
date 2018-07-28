@@ -191,10 +191,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 logger("MongoDB host set to: %s:%s" % (BE_HOSTNAME, BE_PORT))
 
+# connect to the songs database
+songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+
 
 @app.route('/songs/load/', methods=['POST'])
 def route_songs_load():
-    songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+    # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
     load_file = request.files['myfile']
     load_file.save(os.path.join(UPLOAD_FOLDER,"upload.json"))
     try:
@@ -205,7 +208,7 @@ def route_songs_load():
 @app.route('/songs/purge/', methods=['POST'])
 def route_purge():
     try:
-        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+        # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         songs_db.songs.drop()
         songs_db.ratings.drop()
         logger("all songs & ratings purged")
@@ -217,7 +220,7 @@ def route_purge():
 @app.route('/songs/avg/difficulty/', methods=['GET'])
 def route_get_diff_above():
     try:
-        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+        # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         level = request.args.get('level', default = 0)
         logger("level: %s, %s" % (str(level),type(level).__name__))
         level = int(level)
@@ -240,7 +243,7 @@ def route_song_search():
     except:
         pass
     try:
-        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+        # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         return jsonify(song_search(songs_db.songs, search)), 200
     except:
         abort(500)
@@ -257,7 +260,7 @@ def route_allsongs_paginated():
     next_page = "%s?per_page=%s&offset=%s" % (request.base_url,str(per_page), str(offset + per_page))
     prev_page = "%s?per_page=%s&offset=%s" % (request.base_url,str(per_page), str(offset - per_page))
     try:
-        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+        # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         return get_all(songs_db.songs, per_page, offset, prev_page, next_page), 200
     except Exception, err:
         logger(err)
@@ -272,14 +275,14 @@ def route_add_song_rating():
     except Exception, err:
         logger(err)
         abort(400)
-    songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+    # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
     return add_song_rating(song_id, rating, songs_db.ratings, songs_db.songs), 201
 
 
 @app.route('/songs/avg/rating/<song_id>', methods=['GET'])
 def route_get_song_rating(song_id):
     try:
-        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+        # songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         return jsonify(get_song_rating(song_id, songs_db.ratings))
     except Exception, err:
         logger(err)

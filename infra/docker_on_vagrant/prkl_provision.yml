@@ -1,0 +1,10 @@
+- name: Setup LAB Docker host in Vagrant
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Run the Docker and Docker Compose setup
+    include: docker_setup.yml
+
+  - name: Run the solution setup
+    include: env_setup.yml

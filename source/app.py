@@ -8,15 +8,16 @@ from pymongo import MongoClient as mongo
 from pymongo import TEXT
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from flask import request, jsonify, Flask, url_for, abort
-from werkzeug import secure_filename
+from flask import request, jsonify, Flask, abort
+
+
+sys.path.insert(0, './snippets')
+from checks import format_chk
+
 
 def logger(message):
     print("[PRKL API log] %s\n" % (message), file=sys.stdout)
 
-sys.path.insert(0, './snippets')
-
-from checks import format_chk
 
 #mongoDB song collection format
 
@@ -35,12 +36,13 @@ def logger(message):
     print("[PRKL API log] %s -- %s\n" % (timestamp, message), file=sys.stdout)
 
 #settings variables
-be_hostname = "localhost"
-be_port = 27017
+BE_HOSTNAME = "localhost"
+BE_PORT = 27017
 
 #arguments input
 try:
-    be_hostname, be_port = sys.argv[1].split(':')
+    BE_HOSTNAME, BE_PORT = sys.argv[1].split(':')
+    BE_PORT = int(BE_PORT)
 except:
     pass
 
@@ -50,7 +52,8 @@ def connect_mongo(ip, port):
     dbase = client.prkl
     return dbase
 
-
+# simplifies the output of mongo queries,
+# putting object id: song record as key value pair
 def format_output(output):
     result = {}
     try:
@@ -64,8 +67,8 @@ def format_output(output):
 
 
 def insert_song(song_dictionary, dbase):
-    songs = dbase.songs
-    song_id = songs.insert_one(song_dictionary)
+    songs_db = dbase.songs
+    songs_db.insert_one(song_dictionary)
 
 
 def import_data(json_file, dbase):
@@ -74,7 +77,7 @@ def import_data(json_file, dbase):
     for line in json_obj:
         bad_keys = format_chk(json.loads(line), record_format, record_format["released"])
         if len(bad_keys) > 0:
-            logger("invalid song import file")
+            logger("invalid song import file .. aborting")
             abort(400)
         else:
             pass
@@ -91,9 +94,12 @@ def import_data(json_file, dbase):
             % (dbase.songs.count()))
 
 
-def get_all(collection):
-    output = json.loads(dumps(collection.find({})))
-    result = format_output(output)
+def get_all(collection, per_page, offset, prev_page, next_page):
+    result = jsonify({
+                        'result': format_output(json.loads(
+                            dumps(collection.find({}).
+                            skip(offset).limit(per_page)))),
+                        'prev_page': prev_page, 'next_page': next_page})
     return result
 
 
@@ -130,7 +136,6 @@ def add_song_rating(id, rating, rating_collection, song_collection):
     try:
         id_search = song_collection.find({"_id": ObjectId(id)})
     except Exception, err:
-        result = "invalid MongoDB id"
         logger(err)
         id_search = None
         abort(400)
@@ -184,12 +189,12 @@ app.config['DEFAULT_RENDERERS'] = [
 ]
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-logger("MongoDB host set to: %s:%s" % (be_hostname, be_port))
+logger("MongoDB host set to: %s:%s" % (BE_HOSTNAME, BE_PORT))
 
 
 @app.route('/songs/load/', methods=['POST'])
 def route_songs_load():
-    songs_db = connect_mongo(be_hostname, be_port)
+    songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
     load_file = request.files['myfile']
     load_file.save(os.path.join(UPLOAD_FOLDER,"upload.json"))
     try:
@@ -200,7 +205,7 @@ def route_songs_load():
 @app.route('/songs/purge/', methods=['POST'])
 def route_purge():
     try:
-        songs_db = connect_mongo(be_hostname, be_port)
+        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         songs_db.songs.drop()
         songs_db.ratings.drop()
         logger("all songs & ratings purged")
@@ -209,19 +214,10 @@ def route_purge():
         abort(500)
 
 
-@app.route('/songs/', methods=['GET'])
-def route_get_all():
-    try:
-        songs_db = connect_mongo(be_hostname, be_port)
-        result = get_all(songs_db.songs)
-        return jsonify(get_all(songs_db.songs)), 200
-    except:
-        abort(500)
-
 @app.route('/songs/avg/difficulty/', methods=['GET'])
 def route_get_diff_above():
     try:
-        songs_db = connect_mongo(be_hostname, be_port)
+        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         level = request.args.get('level', default = 0)
         logger("level: %s, %s" % (str(level),type(level).__name__))
         level = int(level)
@@ -237,16 +233,34 @@ def route_get_diff_above():
         abort(500)
 
 
-@app.route('/songs/search/', methods=['GET'])
+@app.route('/songs/search', methods=['GET'])
 def route_song_search():
     try:
-        search = request.args.get('string', default = '')
+        search = request.args.get('message', default = '')
     except:
         pass
     try:
-        songs_db = connect_mongo(be_hostname, be_port)
+        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         return jsonify(song_search(songs_db.songs, search)), 200
     except:
+        abort(500)
+
+
+@app.route('/songs/', methods=['GET'])
+def route_allsongs_paginated():
+    try:
+        per_page = int(request.args.get('per_page', default='0'))
+        offset = int(request.args.get('offset', default='0'))
+    except Exception, err:
+        logger(err)
+        abort(400)
+    next_page = "%s?per_page=%s&offset=%s" % (request.base_url,str(per_page), str(offset + per_page))
+    prev_page = "%s?per_page=%s&offset=%s" % (request.base_url,str(per_page), str(offset - per_page))
+    try:
+        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
+        return get_all(songs_db.songs, per_page, offset, prev_page, next_page), 200
+    except Exception, err:
+        logger(err)
         abort(500)
 
 
@@ -256,15 +270,16 @@ def route_add_song_rating():
         song_id = request.form['song_id']
         rating = int(request.form['rating'])
     except Exception, err:
+        logger(err)
         abort(400)
-    songs_db = connect_mongo(be_hostname, be_port)
+    songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
     return add_song_rating(song_id, rating, songs_db.ratings, songs_db.songs), 201
 
 
 @app.route('/songs/avg/rating/<song_id>', methods=['GET'])
 def route_get_song_rating(song_id):
     try:
-        songs_db = connect_mongo(be_hostname, be_port)
+        songs_db = connect_mongo(BE_HOSTNAME, BE_PORT)
         return jsonify(get_song_rating(song_id, songs_db.ratings))
     except Exception, err:
         logger(err)

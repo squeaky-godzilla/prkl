@@ -1,6 +1,7 @@
 ---
 - name: Deploy PRKL
   hosts: localhost
+  gather_facts: true
   become: true
 
   tasks:
@@ -9,32 +10,31 @@
         state: absent
         path: "{{ item }}"
       with_items:
-        - "./infra/backend/.vagrant"
-        - "./infra/frontend/.vagrant"
-
+        - "./backend/.vagrant"
+        - "./frontend/.vagrant"
 
     - name: Deploy MongoDB backend
       command: vagrant up
       args:
-        chdir: ./infra/backend/
-      become_user: "{{ user }}"
+        chdir: ./backend/
+      become_user: "{{ ansible_user_id }}"
       register: progress
 
     - name: Show progress
       debug: msg="{{ progress.stdout }}"
       debug: msg="{{ progress.stderr }}"
-
-    - name: Load testing data
-      shell:
-        cmd: python ./source/init_data_load.py ./data/songs.json purge 192.168.10.10:27017
 
     - name: Deploy Flask API frontend
       command: vagrant up
       args:
-        chdir: ./infra/frontend/
-      become_user: "{{ user }}"
+        chdir: ./frontend/
+      become_user: "{{ ansible_user_id }}"
       register: progress
 
     - name: Show progress
       debug: msg="{{ progress.stdout }}"
       debug: msg="{{ progress.stderr }}"
+
+    - name: Load songs into the mongoDB
+      command: 'curl -F myfile=@../../../data/songs.json http://localhost:5000/songs/load/'
+      delegate_to: localhost

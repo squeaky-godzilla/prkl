@@ -1,17 +1,10 @@
-# Infrastructure for PRKL
+# Infrastructure-as-a-code Lab
 
-*frontend* folder holds frontend infrastructure information
-*backend* folder holds backend infrastructure information
+## Docker (requires Docker, Docker Compose)
+If you are able to run Docker on your machine, you can deploy the solution in containers. In real life, the MongoDB backend is probably not the best option - it is better to deploy it on a dedicated machine, with reasonably powerful storage subsystem. But for the purposes of the demonstration it's enough.
 
-## Architecture & deployment
+## Docker on Vagrant (requires VirtualBox, Vagrant, Ansible)
+If you are unable to run Docker on your system directly, go and deploy it within a Vagrant VM.
 
-nginx proxy loadbalancer --- frontend API server (hosts FLASK) --- backend MongoDB cluster
-
-- Built on Vagrant with VirtualBox virtualization
-- Box: 'ubuntu/trusty64'
-- Using Ansible for config management
-
-## Backend architecture
-
-- datastore backend is MongoDB database
-- (clustered for scaling)
+## Vagrant VM based solution (requires VirtualBox, Vagrant, Ansible)
+VM based deployment powered by Vagrant and Ansible

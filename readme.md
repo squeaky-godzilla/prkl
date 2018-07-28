@@ -1,41 +1,46 @@
-# PRKL - Python Flask API & MongoDB showcase
+# PRKL - Flask API & MongoDB showcase
 
-## Requirements:
-- Use python with Flask.
-- Use a MongoDB server for storing the data provided in the file "songs.json".
-- All routes should return a valid json dictionary.
-- Write tests for the API.
-- Follow the KISS principle.
-- Provide all instructions to do the setup, the easier it is for us to get it running the better.
-- Please take into consideration that the number of songs and ratings will grow to millions of documents as well as the number of users using the API.
+## Terve! Welcome!
 
-## List of routes to implement:
-- GET /songs
-  - Returns a list of songs with some details on them
-  - Add possibility to paginate songs.
+Welcome to the PRKL!
 
-- GET /songs/avg/difficulty
-  - Takes an optional parameter "level" to select only songs from a specific level.
-  - Returns the average difficulty for all songs.
+"./data": This folder contains correct and not-so-correct song data for MongoDB imports
 
-- GET /songs/search
-  - Takes in parameter a 'message' string to search.
-  - Return a list of songs. The search should take into account song's artist and title. The search should be case insensitive.
+"./docs": This contains AWS solution description and other deployment related bits of information
 
-- POST /songs/rating
-  - Takes in parameter a "song_id" and a "rating"
-  - This call adds a rating to the song. Ratings should be between 1 and 5.
+"./infra": Infrastructure-as-a-code folder for lab deployment of PRKL
 
-- GET /songs/avg/rating/<song_id>
-  - Returns the average, the lowest and the highest rating of the given song id.
+"./source": PRKL Flask API source code & tests
 
-## After developing this Flask API:
-- Design a high-level system architecture to support the above.
-- If you’re comfortable with AWS, define the AWS components to support the system architecture design.
-- Describe what is your strategy for scaling each components of the system. Imagine millions of users and on weekends, the traffic could easily spike to 3-5x the average traffic.
-- Think about components that may be required to monitor and maintain the system
-- Describe and justify the tooling you would use for development, continuous integration and running the application on prod.
-- You can use any diagramming tool you wish (one example could be http://dia-installer.de/). You can also use a pen and paper and take a photo.
 
-## Bonus:
-- Putting your work in a git repository is a plus.
+*Most of the folders in the repo will contain a relevant readme.md file*
+
+
+### What's this?
+
+This is a showcase of a Flask API with MongoDB backend. The API has following capabilities:
+- load song records from a valid JSON file
+- retrieve all records either in one request or in paginated form
+- retrieve selected results above specific level with stats aggregation
+- regexp powered substring search for "artist" and "title" fields
+- add rating to songs
+- retrieve stats aggregations for song ratings
+- purge all data from the database collections
+
+## How does it work?
+
+### MongoDB
+The database "prkl" is divided into two collections - "songs" and "ratings". Ratings are stored per object id from "songs" collection (rating record looks like this - "rating object id": {"song id": something, "rating": 3}).
+
+The interaction between the API and the database is handled by the "pymongo" library.
+
+### Flask API
+Flask API (/source/ folder) is structured in following way:
+- app.py: the main program, contains query fucntions and route definitions
+- /snippets/checks.py: added as external snippets library, currently contains a format checker only
+- /tests/: contains API tests for Tavern (Tavern is a neat plugin for pytest, making it possible to specify test cases in YAML)
+- /upload: a folder for JSON file upload for the database imports
+- prkl-api.conf: Upstart service configuration (for VM based deployments)
+
+### Testing
+Test cases are built for Tavern, they are meant to test the possible edge cases - especially of user POST methods on API routes. Since they are written in YAML, they are self explanatory.

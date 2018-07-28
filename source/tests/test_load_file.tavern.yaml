@@ -20,10 +20,10 @@ stages:
       url: http://localhost:5000/songs/load/
       method: POST
       files:
-        myfile: ../data/songs.json
+        myfile: ../data/wrongs.json
 
     response:
-      status_code: 400
+      status_code: 500
 
   - name: upload valid file, totally wrong
 
@@ -31,7 +31,7 @@ stages:
       url: http://localhost:5000/songs/load/
       method: POST
       files:
-        myfile: api_functions.py
+        myfile: app.py
 
     response:
-      status_code: 400
+      status_code: 500

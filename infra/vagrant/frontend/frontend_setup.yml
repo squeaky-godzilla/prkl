@@ -29,24 +29,31 @@
 
   - name: Flask API server - copy API source code
     copy:
-      src: ../../source/api_functions.py
-      dest: /usr/bin/api_functions.py
+      src: ../../../source/app.py
+      dest: /usr/bin/app.py
+      owner: prkl-api
+      group: prkl-api
+      mode: 0644
+
+  - name: Flask API server - copy API source code - snippets
+    copy:
+      src: ../../../source/snippets/checks.py
+      dest: /usr/bin/
       owner: prkl-api
       group: prkl-api
       mode: 0644
 
   - name: Flask API server - copy upstart config
     copy:
-      src: ../../source/prkl-api.conf
+      src: prkl-api.conf
       dest: /etc/init/prkl-api.conf
 
   - name: Flask API server - start Flask API service
     service:
       name: prkl-api
       state: started
+    become_user: prkl-api
 
-  - name: Flask API server - test API get_all loopback response
-    uri:
-      url: http://127.0.0.1:5000/songs/
-    # until: "'artist' in this.content"
-    retries: 5
+  - name: Load songs into the mongoDB
+    command: 'curl -F myfile=@../../../data/songs.json http://localhost:5000/songs/load/'
+    delegate_to: localhost

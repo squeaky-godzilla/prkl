@@ -22,9 +22,9 @@ accommodating spike traffic can be done in following ways:
 Application frontend (FLASK) is not performance optimized for scale up approach,
 however it's very well suited for scaling out onto smaller instances, be it small EC2 instances or containers.
 
-The scale out can be automated by enabling autoscaling group and elastic loadbalancer in AWS, or by observing the traffic spike pattern and scheduling the scale out accordingly.
+The scale out can be automated by enabling autoscaling group and elastic loadbalancer in AWS, or by observing the traffic spike pattern and scheduling the scale out accordingly. The autoscaling group method is not very efficient for sudden workload spikes.
 
-The selected backend (MongoDB) is also a scale out friendly infrastructure (although there are scale up deployments of the technology as well), however the scaling of it's components is more complex than the Flask frontend. In the case of MongoDB, I'd suggest careful analytics of the compute and storage capacity demand and adjust the growth strategy. Because the datastore and query processing function is decoupled, it gives options to achieve optimal performance even in large data volumes. 
+The selected backend (MongoDB) is also a scale out friendly infrastructure (although there are scale up deployments of the technology as well), however the scaling of it's components is more complex than the Flask frontend. In the case of MongoDB, I'd suggest careful analytics of the compute and storage capacity demand and adjust the growth strategy. Because the datastore and query processing function is decoupled, it gives options to achieve optimal performance even in large data volumes.
 
 ### Request processing:
 - user request comes through the internet gateway
@@ -38,3 +38,8 @@ The selected backend (MongoDB) is also a scale out friendly infrastructure (alth
 - There is an option to use relevant AWS services or build a solution deployed on ie. EC2 or EKS
 - Absolute basics for tracking numeric metrics is a TSDB solution, either CloudWatch or EC2 based InfluxDB (or other TSDB) coupled with Grafana or New Relic visualization
 - for log analysis I suggest using either Splunk or ELK stack (ElasticSearch, Logstash, Kibana), combined with Kinesis
+
+### CICD pipeline
+![alt text](https://github.com/squeaky-godzilla/prkl/raw/master/docs/PRKL_CICD.jpg)
+
+Here is a simple suggestion how a multi environment deployment can be done with combination of Jenkins, Artifactory and Docker.

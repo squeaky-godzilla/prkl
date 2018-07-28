@@ -6,10 +6,10 @@ stages:
   - name: get the songs above some valid level
 
     request:
-      url: http://localhost:5000/songs/search/
+      url: http://localhost:5000/songs/search
       method: GET
       params:
-        string: bou
+        message: bou
 
     response:
       status_code: 200
@@ -17,10 +17,10 @@ stages:
   - name: search in artist
 
     request:
-      url: http://localhost:5000/songs/search/
+      url: http://localhost:5000/songs/search
       method: GET
       params:
-        string: yous
+        message: yous
 
     response:
       status_code: 200
